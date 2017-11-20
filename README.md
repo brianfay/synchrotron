@@ -4,13 +4,11 @@ Server-side clojurescript utils for interacting with the [SuperCollider server](
 
 ## Overview
 
-SuperCollider already has its own programming language called `sclang`, but it allows for interaction with its server from other languages.
+While [overtone](http://overtone.github.io/) exists for writing SuperCollider applications in Clojure, the startup time for a JVM-based Clojure process is to slow to make this an appealing option on the Raspberry Pi.
 
-I enjoy programming in Clojure, and while there's already [a great solution](http://overtone.github.io/) for programming SuperCollider in Clojure.
+Alternatively, I'm writing clojurescript and targetting nodejs for the runtime. Synchrotron aims to provide functionality that I need from SuperCollider, but will likely never achieve parity with overtone or sclang.
 
-However, the ability to run on a Raspberry Pi is important to me. From my experience the startup time for a JVM-based Clojure process is miserable on a Raspberry Pi. Nodejs, on the other-hand, starts in milliseconds.
-
-Some hypothetical features for synchrotron to eventually have are:
+Some hypothetical features for synchrotron to eventually have include:
 * Spawning and communicating to an scsynth process
 * Running OSC Server Commands
 * Parsing binary synthdef files to edn and translating edn back into binary synthdef format
@@ -23,7 +21,7 @@ Some hypothetical features for synchrotron to eventually have are:
 
 I'm using figwheel and emacs (w/ piggieback so I can eval code inline) for my development workflow.
 
-It's really great except for sometimes when it's not, and when you have to set it up.
+It's really great. Except for sometimes when it's not. This is how I set it up; it's a bit of a nuisance: 
 
 1. SuperCollider must be installed
 2. Go to the synchrotron project in a terminal
