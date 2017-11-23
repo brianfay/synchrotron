@@ -31,7 +31,8 @@
                            :output-to "out/synchrotron.js"
                            :output-dir "out"
                            :source-map-timestamp true
-                           ;; :optimizations :none
+                           :optimizations :none
+                           :source-map true
                            :target :nodejs}}]}
 
   :figwheel {;; :http-server-root "public" ;; default and assumes "resources"

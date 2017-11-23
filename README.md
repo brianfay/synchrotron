@@ -4,7 +4,7 @@ Server-side clojurescript utils for interacting with the [SuperCollider server](
 
 ## Overview
 
-While [overtone](http://overtone.github.io/) exists for writing SuperCollider applications in Clojure, the startup time for a JVM-based Clojure process is to slow to make this an appealing option on the Raspberry Pi.
+While [overtone](http://overtone.github.io/) exists for writing SuperCollider applications in Clojure, the startup time for a JVM-based Clojure process is too slow to make this an appealing option on the Raspberry Pi.
 
 Alternatively, I'm writing clojurescript and targetting nodejs for the runtime. Synchrotron aims to provide functionality that I need from SuperCollider, but will likely never achieve parity with overtone or sclang.
 
