@@ -96,6 +96,11 @@
   [id name val]
   (call-scsynth "n_set" id name val))
 
+(defn define-synth
+  [buffer]
+  (def buffer buffer)
+  (call-scsynth "d_recv" buffer))
+
 (comment
   (add-synth-to-head "sine" 1 0 [:freq 770])
   (add-synth-to-head "sine" 2 0 [:freq 220 :out 1])

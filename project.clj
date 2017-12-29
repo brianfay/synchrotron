@@ -5,7 +5,8 @@
 
   :dependencies [[org.clojure/clojure "1.9.0-beta4"]
                  [org.clojure/clojurescript "1.9.946"]
-                 [org.clojure/core.async  "0.3.443"]]
+                 [org.clojure/core.async  "0.3.443"]
+                 [com.stuartsierra/dependency "0.2.0"]]
 
   :plugins [[lein-figwheel "0.5.14"]
             [lein-npm "0.6.2"]
