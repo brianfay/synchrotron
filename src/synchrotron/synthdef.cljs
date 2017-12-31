@@ -203,8 +203,7 @@
      ;;num-variants
      2
      ;;variants
-     (count-variants-bytes variants num-params)
-     ))
+     (count-variants-bytes variants num-params)))
 
 (defn- count-synthdef-map-bytes
   "Takes a clojure map representation of a synth definition file
@@ -341,22 +340,8 @@
         (set-uint32 file-type-id)
         (set-uint32 file-version)
         (set-uint16 num-synthdefs)
-        (write-synthdefs synthdefs))))
-
-(comment
-  (def a (atom nil))
-  (parse-synthdef-file "/home/bfay/.local/share/SuperCollider/synthdefs/sine.scsyndef" a)
-  (parse-synthdef-file "/home/bfay/.local/share/SuperCollider/synthdefs/saw.scsyndef" a)
-  (parse-synthdef-file "/home/bfay/.local/share/SuperCollider/synthdefs/lfsine.scsyndef" a)
-  (parse-synthdef-file "/home/bfay/.local/share/SuperCollider/synthdefs/vartest.scsyndef" a)
-  (def synthdef (deref a))
-
-  (count-synthdef-buffer-bytes synthdef)
-
-  (.getInt32 (:data-view (write-synthdef-buffer synthdef)) 0)
-  (write-file "/tmp/synthtest.scsyndef" (-> (write-synthdef-buffer synthdef)
-       :data-view
-       .-buffer
-       ))
-
-  )
+        (write-synthdefs synthdefs)
+        :data-view
+        .-buffer
+        (js/Uint8Array.)
+        (js/Buffer.))))
