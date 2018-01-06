@@ -6,6 +6,7 @@
                           :inputs [:a nil :b nil]
                           :num-outputs 1})
 
+;;TODO infer calculation-rate from ugen inputs (but I'm not sure which rate should get preference if two different rates are given)
 (def add (partial abstract-ugen (assoc binary-op-ugen-data :calculation-rate :ar :special-index 0)))
 (def sub (partial abstract-ugen (assoc binary-op-ugen-data :calculation-rate :ar :special-index 1)))
 (def mul (partial abstract-ugen (assoc binary-op-ugen-data :calculation-rate :ar :special-index 2)))

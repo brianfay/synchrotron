@@ -4,6 +4,7 @@
 
 (enable-console-print!)
 
+;;will probably want to lose this eventually and use this project as a library
 (defn -main [& _]
   (scsynth/start-scsynth))
 

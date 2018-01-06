@@ -98,21 +98,4 @@
 
 (defn define-synth
   [buffer]
-  (def buffer buffer)
   (call-scsynth "d_recv" buffer))
-
-(comment
-  (add-synth-to-head "sine" 1 0 [:freq 770])
-  (add-synth-to-head "sine" 2 0 [:freq 220 :out 1])
-
-  (defn ctl-fun [id fundamental]
-    (set-control id :freq (* fundamental (+ 1 (rand-int 10))))
-    (js/setTimeout (partial ctl-fun id fundamental) 500))
-
-  (ctl-fun 1 110)
-  (ctl-fun 2 330)
-
-  (defn ctl-fun [_ _])
-
-  (deep-free 0)
-  )

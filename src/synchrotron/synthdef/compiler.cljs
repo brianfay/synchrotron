@@ -54,6 +54,18 @@
                                               {:inputs inputs})) consts))
         [(map set-additional-ugen-fields ugens) constants]))))
 
+(defn- compile-controls
+  [control-ugens]
+  (let [param-names (if (seq control-ugens)
+                      (into [] (map-indexed (fn [idx m] [(:param-name m) idx]) control-ugens))
+                      [])
+        values      (map :value control-ugens)
+        num-params  (or (count param-names) 0)]
+    {:num-params num-params
+     :num-param-names num-params ;;can this actually differ from num-params?
+     :param-names param-names
+     :init-param-values values}))
+
 (defn compile-synthdef
   [synthdef-name]
   (let [ugen-list (deref ugen/ugens-in-current-synthdef)
@@ -62,21 +74,18 @@
                               :dependencies (union (:dependencies acc) (:dependencies node))})
                            {}
                            ugen-list)
-
-        [ugens constants] (compile-ugens ugen-graph)]
+        [ugens constants] (compile-ugens ugen-graph)
+        control-ugens (filter (fn [m] (= "Control" (:ugen-name m))) ugen-list)
+        control-details (compile-controls control-ugens)]
     {:file-type-id synthdef/SCgf
      :file-version 2
      :num-synthdefs 1 ;;not supporting multiple synthdef definitions
-     :synthdefs [{:ugens ugens
-                  :synthdef-name synthdef-name
-                  :num-ugens (count ugens)
-                  :num-param-names 0 ;;TODO
-                  :num-params 0 ;;TODO
-                  :param-names [] ;;TODO
-                  :init-param-values [] ;;TODO
-                  :constants constants
-                  :num-constants (count constants)
-                  :num-variants 0 ;;not supporting variants yet; don't know any use cases
-                  :variants []}]}))
-
-
+     :synthdefs [(merge
+                  control-details
+                  {:ugens ugens
+                   :synthdef-name synthdef-name
+                   :num-ugens (count ugens)
+                   :constants constants
+                   :num-constants (count constants)
+                   :num-variants 0 ;;not supporting variants yet; don't know any use cases
+                   :variants []})]}))
