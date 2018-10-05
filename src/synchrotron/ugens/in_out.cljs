@@ -15,9 +15,9 @@
                        :inputs [:bus 0 :channels-array nil]
                        :num-outputs 0})
 
-(def replace-out (partial abstract-ugen replace-out-data))
-(def out:ar      (partial abstract-ugen (assoc replace-out-data :calculation-rate :ar)))
-(def out:kr      (partial abstract-ugen (assoc replace-out-data :calculation-rate :kr)))
+(def replace-out    (partial abstract-ugen replace-out-data))
+(def replace-out:ar (partial abstract-ugen (assoc replace-out-data :calculation-rate :ar)))
+(def replace-out:kr (partial abstract-ugen (assoc replace-out-data :calculation-rate :kr)))
 
 (def in-data {:ugen-name "In"
               :rates [:ar :kr]
