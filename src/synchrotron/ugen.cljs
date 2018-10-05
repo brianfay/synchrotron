@@ -127,8 +127,6 @@
     {:id id :out-index out-index}))
 
 (defn abstract-ugen [ugen-template & args]
-  (def ugen-template ugen-template)
-  (def args args)
   (let [parsed-args (parse-args args (:inputs ugen-template))
         arg-kv-pairs (partition 2 parsed-args)
         arg-vals (map second arg-kv-pairs)]

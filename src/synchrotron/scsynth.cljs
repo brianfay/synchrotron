@@ -1,6 +1,7 @@
 (ns synchrotron.scsynth
   (:require [cljs.nodejs :as nodejs]
-            [synchrotron.common-util :refer [green red]]))
+            [synchrotron.common-util :refer [green red]]
+            [goog.object]))
 
 (defonce dgram         (nodejs/require "dgram"))
 (defonce osc           (nodejs/require "osc-min"))
@@ -13,12 +14,19 @@
 ;; process
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn- mk-process-env []
+  (let [obj (.create js/Object (.-env nodejs/process))]
+    (goog.object/set obj "SC_JACK_DEFAULT_INPUTS" "system")
+    (goog.object/set obj "SC_JACK_DEFAULT_OUTPUTS" "system")
+    #js{:env obj}))
+
 (defn start-scsynth
   "Start an scsynth process if we have not already started one
   (this may have issues if anyn other scsynth instances are running on the computer)"
   []
   (when-not @scsynth-process
-    (let [scsynth (spawn "scsynth" #js["-u" "57110"])]
+    (let [env (.create js/Object (.-env nodejs/process))
+          scsynth (spawn "scsynth" #js["-u" "57110"] (mk-process-env))]
       (println (green "Started scsynth"))
       (.on (.-stdout scsynth) "data" #(println (green %)))
       (.on (.-stderr scsynth) "data" #(println (red %)))
