@@ -1,0 +1,8 @@
+{:deps {org.clojure/clojurescript {:mvn/version "1.10.339"}
+        com.stuartsierra/dependency {:mvn/version "0.2.0"}}
+;; :aliases {:nrepl
+;;           {:extra-deps
+;;            {nrepl/nrepl {:mvn/version "0.4.5"}
+;;             cider/cider-nrepl {:mvn/version "0.18.0"}
+;;             cider/piggieback {:mvn/version "0.3.9"}}}}
+}

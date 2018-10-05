@@ -19,23 +19,14 @@ Some hypothetical features for synchrotron to eventually have include:
 
 ## Dev Setup
 
-I'm using figwheel and emacs (w/ piggieback so I can eval code inline) for my development workflow.
-
-It's really great. Except for sometimes when it's not. This is how I set it up; it's a bit of a nuisance: 
+How I'm working with this right now:
 
 1. SuperCollider must be installed
-2. Go to the synchrotron project in a terminal
-3. Run `lein deps` (should install the npm dependencies)
-4. Open emacs and jump to a file in the synchrotron project
-5. Run `cider-jack-in-clojurescript`
-6. Open up the repl buffer and run this: 
-```
-(do (require 'figwheel-sidecar.repl-api)
-  (figwheel-sidecar.repl-api/start-figwheel!)
-  (figwheel-sidecar.repl-api/cljs-repl))
-```
-7. Run `node out/synchrotron.js`. The node process should connect to figwheel and you should be able to begin developing interactively.
+2. Open emacs and jump to a file in the synchrotron project
+3. Run `cider-jack-in-clojurescript`
+4. When it prompts you to Select ClojureScript REPL type for `cider-connect-sibling-cljs`, choose `node`
+5. Wait a couple seconds, and you should be connected
 
 ## License
 
-Copyright © 2017 Brian Fay / Licensed under the MIT license
+Copyright © 2018 Brian Fay / Licensed under the MIT license
