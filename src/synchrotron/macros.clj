@@ -38,7 +38,7 @@
        (doseq [control-ugen# (map second (partition 2 ~control-bindings))]
          (swap! synchrotron.ugen/ugens-in-current-synthdef conj control-ugen#))
        (let ~control-bindings
-         (do (~@body)
+         (do ~@body
              (-> (#'synchrotron.synthdef.compiler/compile-synthdef ~synthdef-name)
                  (synchrotron.synthdef/write-synthdef-buffer)
                  (synchrotron.scsynth/define-synth))

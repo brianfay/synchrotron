@@ -24,9 +24,10 @@
       (if-let [input (first inputs-to-read)]
         (if (map? input)
           ;;ugen
-          (let [ancestor (some (fn [m] (when (= (:id m) (ffirst input)) m)) ugens)]
+          (let [ugen (dissoc ugen :arg-map?)
+                ancestor (some (fn [m] (when (= (:id m) (:id input)) m)) ugens)]
             (recur (rest inputs-to-read) (conj inputs {:index-of-ugen (.indexOf ugens ancestor)
-                                                       :index-of-output (second (first input))}) consts))
+                                                       :index-of-output (:out-index input)}) consts))
           ;;constant
           (let [[constants-vec constant-idx] (ensure-constant consts input)]
             (recur (rest inputs-to-read) (conj inputs {:index-of-ugen -1 :index-of-output constant-idx}) constants-vec)))
@@ -64,7 +65,7 @@
     {:num-params num-params
      :num-param-names num-params ;;can this actually differ from num-params?
      :param-names param-names
-     :init-param-values values}))
+     :init-param-values (into [] values)}))
 
 (defn compile-synthdef
   [synthdef-name]

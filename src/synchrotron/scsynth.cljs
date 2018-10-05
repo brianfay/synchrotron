@@ -63,7 +63,19 @@
              (if (and err (not (= 0 err))) (println (str "There was an error: " err)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; scsynth commands
+;; Synth Definition Commands:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn define-synth
+  [buffer]
+  (call-scsynth "d_recv" buffer))
+
+(defn delete-synthdef
+  [synthdef-name]
+  (call-scsynth "d_free" synthdef-name))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Node Commands:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn free-node
@@ -74,11 +86,29 @@
   [id]
   (call-scsynth "g_deepFree" id))
 
-(defn add-group
-  "Adds a group with the given id, add-action, and target id."
-  [id add-action target]
-  (do
-    (call-scsynth "g_new" id add-action target)))
+(defn set-control
+  [id name val]
+  (call-scsynth "n_set" id name val))
+
+(defn map-control-to-bus
+  [id name bus]
+  (call-scsynth "n_map" id name bus))
+
+(defn move-node-before
+  [id target]
+  (call-scsynth "n_before" id target))
+
+(defn move-node-after
+  [id target]
+  (call-scsynth "n_after" id target))
+
+(defn order-nodes
+  [add-action target node-ids]
+  (apply call-scsynth "n_order" add-action target node-ids))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Synth Commands:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn add-synth
   ([synthdef id add-action target controls]
@@ -92,10 +122,40 @@
   ([synthdef id target]
    (add-synth synthdef id 0 target)))
 
-(defn set-control
-  [id name val]
-  (call-scsynth "n_set" id name val))
+(defn add-synth-to-tail
+  ([synthdef id target controls]
+   (add-synth synthdef id 1 target controls))
+  ([synthdef id target]
+   (add-synth synthdef id 1 target)))
 
-(defn define-synth
-  [buffer]
-  (call-scsynth "d_recv" buffer))
+(defn add-synth-before
+  ([synthdef id target controls]
+   (add-synth synthdef id 2 target controls))
+  ([synthdef id target]
+   (add-synth synthdef id 2 target)))
+
+(defn add-synth-after
+  ([synthdef id target controls]
+   (add-synth synthdef id 3 target controls))
+  ([synthdef id target]
+   (add-synth synthdef id 3 target)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Group Commands:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn add-group
+  "Adds a group with the given id, add-action, and target id."
+  [id add-action target]
+  (do
+    (call-scsynth "g_new" id add-action target)))
+
+(defn free-in-group
+  [id]
+  (call-scsynth "g_freeAll" id))
+
+(defn alloc-buffer [num frames channels]
+  (call-scsynth "b_alloc" num frames channels))
+
+(defn free-buffer [num]
+  (call-scsynth "b_free"))
