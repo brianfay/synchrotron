@@ -27,6 +27,11 @@ How I'm working with this right now:
 4. When it prompts you to Select ClojureScript REPL type for `cider-connect-sibling-cljs`, choose `node`
 5. Wait a couple seconds, and you should be connected
 
+Another option is to run `clj -A:nrepl start-nrepl.clj` to start an nrepl (wrapped with cider and piggieback middleware).
+Then in emacs run `cider-connect`, and eval the lines in `start-piggieback-node-repl.clj`
+This will start a node process and a clojurescript repl that will compile cljs to js and send it to node.
+Soon I would like to be able to run the node process on a remote server (for developing on Raspberry Pi or Bela)
+
 ## License
 
 Copyright © 2018 Brian Fay / Licensed under the MIT license
