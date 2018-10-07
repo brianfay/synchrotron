@@ -1,13 +1,11 @@
 (ns synchrotron.scsynth
   (:require [cljs.nodejs :as nodejs]
+            [dgram]
+            [child_process :as child-process]
             [synchrotron.common-util :refer [green red]]
             [goog.object]))
 
-(defonce dgram         (nodejs/require "dgram"))
-(defonce osc           (nodejs/require "osc-min"))
-(defonce child-process (nodejs/require "child_process"))
-(defonce spawn         (.-spawn child-process))
-
+(defonce osc-min (js/require "osc-min"));;strangely, requiring this in the ns block doesn't work until you eval it a bunch of times
 (defonce scsynth-process (atom nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -26,7 +24,7 @@
   []
   (when-not @scsynth-process
     (let [env (.create js/Object (.-env nodejs/process))
-          scsynth (spawn "scsynth" #js["-u" "57110"] (mk-process-env))]
+          scsynth (child-process/spawn "scsynth" #js["-u" "57110"] (mk-process-env))]
       (println (green "Started scsynth"))
       (.on (.-stdout scsynth) "data" #(println (green %)))
       (.on (.-stderr scsynth) "data" #(println (red %)))
@@ -44,12 +42,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn parse-osc-callback [msg]
-  (let [osc-map (-> (.fromBuffer osc msg)
+  (let [osc-map (-> (.fromBuffer osc-min msg)
                     (js->clj :keywordize-keys true))]
     (apply str (interpose " " (cons (:address osc-map) (map :value (:args osc-map)))))))
 
 (defn create-socket []
-  (let [socket (.createSocket dgram "udp4")]
+  (let [socket (dgram/createSocket "udp4")]
     (do
       (.on socket "listening" #(println "udp is listening"))
       (.on socket "message" (fn [msg info]
@@ -61,7 +59,7 @@
 (defonce udp-socket (create-socket))
 
 (defn array->osc [arr]
-  (.toBuffer osc arr))
+  (.toBuffer osc-min arr))
 
 (defn call-scsynth [addr & args]
   "Sends an OSC buffer to scsynth over a udp socket, using the given address and arguments."
@@ -155,8 +153,7 @@
 (defn add-group
   "Adds a group with the given id, add-action, and target id."
   [id add-action target]
-  (do
-    (call-scsynth "g_new" id add-action target)))
+  (call-scsynth "g_new" id add-action target))
 
 (defn free-in-group
   [id]

@@ -20,14 +20,6 @@
         n
         (recur (inc n) (rest args))))))
 
-(defn replace-with-nth
-  "For any sequential elements within coll, replace the element with its nth % (length of element) item."
-  [coll n]
-  (for [element coll]
-    (if (sequential? element)
-      (nth element (mod n (count element)))
-      element)))
-
 (defn replace-nth-arg
   "For any sequential elements within args list, replace the element with its nth % (length of element) item."
   [args n]
@@ -50,12 +42,12 @@
         used-arg-names (take (count ordered-args) default-arg-names)
         dup-arg (some #(get (set kwarg-names) %) (set used-arg-names))]
     (when dup-arg
-      (throw (js/Error (str "Can't set " dup-arg " as a named arg; already set as an ordered arg")))))
-  ;;don't allow args that the ugen doesn't recognize
-  (when-let [bad-arg (some
-                      #(when-not (contains? (set default-args) %) %)
-                      (map first (partition 2 kwargs)))]
-    (throw (js/Error (str "invalid arg: " bad-arg)))))
+      (throw (js/Error (str "Can't set " dup-arg " as a named arg; already set as an ordered arg"))))
+    ;;don't allow args that the ugen doesn't recognize
+    (when-let [bad-arg (some
+                        #(when-not (contains? (set default-arg-names) %) %)
+                        (map first (partition 2 kwargs)))]
+      (throw (js/Error (str "invalid arg: " bad-arg))))))
 
 (defn fill-in-ordered-args
   [ordered-args default-args]
@@ -85,20 +77,15 @@
      all following arguments are assumed to be named as well.
      default-args should be a sequence of named args like [:freq 220 :phase 0.2]."
   [args default-args]
-  (let [parsed-args (if-let [k-idx (first-keyword-index args)]
-                      (let [ordered-args (take k-idx args)
-                            kwargs (drop k-idx args)
-                            kwargs-map (reduce (fn [m [k v]] (assoc m k v)) {} (partition 2 kwargs))]
-                        (assert-valid-args! ordered-args kwargs default-args)
-                        (->> default-args
-                             (fill-in-ordered-args ordered-args)
-                             (fill-in-named-args kwargs-map)))
-                      (fill-in-ordered-args args default-args))]
-    ;;TODO: assert no nil args
-    ;;convert any ugen maps to a [ugen-id out-index]
-    (reduce (fn [acc v] (if (map? v)
-                          (conj acc {(get v :id) (get v :out-index)})
-                          (conj acc v))) [] parsed-args)))
+  (if-let [k-idx (first-keyword-index args)]
+    (let [ordered-args (take k-idx args)
+          kwargs (drop k-idx args)
+          kwargs-map (reduce (fn [m [k v]] (assoc m k v)) {} (partition 2 kwargs))]
+      (assert-valid-args! ordered-args kwargs default-args)
+      (->> default-args
+           (fill-in-ordered-args ordered-args)
+           (fill-in-named-args kwargs-map)))
+    (fill-in-ordered-args args default-args)))
 
 (def kw-rate->int-rate {:scalar 0
                         :kr 1
@@ -115,7 +102,7 @@
   (let [partitioned-args (partition 2 args)]
     (some (fn [[arg-k arg-v]] (when (= arg-k arg-key) arg-v)) partitioned-args)))
 
-(defn build-ugen [id ugen-template args out-index]
+(defn build-ugen! [id ugen-template args out-index]
   (let [new-ugen {:id id
                   :out-index out-index
                   :calculation-rate (:calculation-rate ugen-template)
@@ -148,14 +135,11 @@
                                                      {:calculation-rate (get-calculation-rate ugen-template)})))]
         (doall
          (if (<= num-outputs 1);;TODO: throw an error if a ugen tries to take an out ugen as input
-           (build-ugen id ugen-template args 0)
+           (build-ugen! id ugen-template args 0)
            (for [out-n (range num-outputs)]
-             (build-ugen id ugen-template args out-n))))))))
+             (build-ugen! id ugen-template args out-n))))))))
 
 ;;had a function here called abstract-output-ugen
 ;;this was for ugens that auto-increment bus number as the macroexpand.
 ;;didn't get the implementation working with Controls.
 ;;I sort of prefer being explicit about the buses, but maybe I'll bake that feature into abstract-ugen later
-
-(comment
-  (deref ugens-in-current-synthdef))
