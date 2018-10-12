@@ -5,19 +5,19 @@
 (defn control-ugen
   [num-outputs out-index [param-name value]]
   {:id 0
-    :out-index out-index
-    :ugen-name "Control"
-    :param-name (name param-name)
-    :calculation-rate 1
-    :ugens {0 {:ugen-name "Control"
-               :rates [:kr]
-               :calculation-rate 1
-               :inputs []
-               :num-outputs num-outputs
-               ;;this needs to go into a vector because it would try to evaluate otherwise:
-               :outputs (into [] (repeat num-outputs {:calculation-rate 1}))
-               :id 0}}
-    :value value})
+   :out-index out-index
+   :ugen-name "Control"
+   :param-name (name param-name)
+   :calculation-rate 1
+   :ugens {0 {:ugen-name "Control"
+              :rates [:kr]
+              :calculation-rate 1
+              :inputs []
+              :num-outputs num-outputs
+              ;;this needs to go into a vector because it would try to evaluate otherwise:
+              :outputs (into [] (repeat num-outputs {:calculation-rate 1}))
+              :id 0}}
+   :value value})
 
 (defn destructure-controls
   [control-bindings]
