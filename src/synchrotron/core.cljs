@@ -1,6 +1,8 @@
 (ns synchrotron.core
   (:require [synchrotron.scsynth :as scsynth]
-            [synchrotron.synthdef :as synthdef]))
+            ;;requiring these to force evaluation - the defsynth macro references them so they need to be required somewhere
+            [synchrotron.synthdef.compiler]
+            [synchrotron.ugen]))
 
 (enable-console-print!)
 
