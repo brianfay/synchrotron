@@ -159,8 +159,14 @@
   [id]
   (call-scsynth "g_freeAll" id))
 
-(defn alloc-buffer [num frames channels]
-  (call-scsynth "b_alloc" num frames channels))
+(defn alloc-buffer [buf-num num-frames channels]
+  (call-scsynth "b_alloc" buf-num num-frames channels))
+
+(defn alloc-buffer-from-soundfile
+  ([buf-num sf-path]
+   (alloc-buffer-from-soundfile buf-num sf-path 0 0)) ;; whole sound file is read if num-frames is <= 0
+  ([buf-num sf-path starting-frame num-frames]
+   (call-scsynth "b_allocRead" buf-num sf-path starting-frame num-frames)))
 
 (defn free-buffer [num]
   (call-scsynth "b_free"))
