@@ -255,6 +255,15 @@
 (def sin-osc:ar (partial abstract-ugen (assoc sin-osc-data :calculation-rate :ar)))
 (def sin-osc:kr (partial abstract-ugen (assoc sin-osc-data :calculation-rate :kr)))
 
+(def impulse-data {:ugen-name "Impulse"
+                   :rates [:ar :kr]
+                   :inputs [:freq 440 :phase 0]
+                   :num-outputs 1})
+
+(def impulse (partial abstract-ugen impulse-data))
+(def impulse:ar (partial abstract-ugen (assoc impulse-data :calculation-rate :ar)))
+(def impulse:kr (partial abstract-ugen (assoc impulse-data :calculation-rate :kr)))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Pan
@@ -279,5 +288,18 @@
                   :num-outputs 1})
 
 (def phasor (partial abstract-ugen phasor-data))
-(def phasor:ar (partial abstract-ugen phasor-data :calculation-rate :ar))
-(def phasor:kr (partial abstract-ugen phasor-data :calculation-rate :kr))
+(def phasor:ar (partial abstract-ugen (assoc phasor-data :calculation-rate :ar)))
+(def phasor:kr (partial abstract-ugen (assoc phasor-data :calculation-rate :kr)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Envelope
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def linen-data {:ugen-name "Linen"
+                 :rates [:kr]
+                 :inputs [:gate 1 :attack-time 0.01 :sus-level 1 :release-time 1.0 :done-action 0]
+                 :num-outputs 1})
+
+(def linen (partial abstract-ugen linen-data))
+(def linen:kr (partial abstract-ugen (assoc linen-data :calculation-rate :kr)))

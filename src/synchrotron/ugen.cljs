@@ -102,6 +102,12 @@
   (let [partitioned-args (partition 2 args)]
     (some (fn [[arg-k arg-v]] (when (= arg-k arg-key) arg-v)) partitioned-args)))
 
+(defn- remove-arg
+  [args arg-key]
+  (let [partitioned-args     (partition 2 args)
+        new-partitioned-list (remove (fn [[arg-k arg-v]] (= arg-k arg-key)) partitioned-args)]
+    (flatten new-partitioned-list)))
+
 (defn build-ugen! [id ugen-template args out-index]
   (let [new-ugen {:id id
                   :out-index out-index
@@ -126,6 +132,10 @@
             num-outputs (if (= (:num-outputs ugen-template) :variadic)
                           (get-arg parsed-args :num-channels)
                           (:num-outputs ugen-template))
+            ;;remove num-channels for some ugens because it's not an actual ugen input, just a confusing language-side construct
+            parsed-args (if (:treat-num-channels-as-input ugen-template)
+                          parsed-args
+                          (remove-arg parsed-args :num-channels))
             ugen-template (assoc ugen-template
                                  :inputs parsed-args
                                  :id id
