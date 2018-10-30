@@ -35,9 +35,13 @@
 ;; Buffer IO
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;num-channels is actually a concept of "MultiOutUgen" and so this doesn't work
 (def buf-rd-data {:ugen-name "BufRd"
                   :rates [:ar :kr]
                   :inputs [:num-channels 1 :buf-num 0 :phase 0 :loop 0 :interpolation 2]
+                  ;;sclang has a variable called argsNamesInputsOffsets, which you can set to 2 to NOT send the first input to scsynth.
+                  ;;it's very confusing.
+                  :treat-num-channels-as-input false
                   :num-outputs :variadic})
 
 (def buf-rd    (partial abstract-ugen buf-rd-data))
@@ -325,3 +329,62 @@
 
 (def linen (partial abstract-ugen linen-data))
 (def linen:kr (partial abstract-ugen (assoc linen-data :calculation-rate :kr)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Bela
+;; WARNING -- these will only work on the Bela fork of SuperCollider
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def multiplex-analog-in-data {:ugen-name "MultiplexAnalogIn"
+                               :rates [:ar :kr]
+                               :inputs [:analog-pin 0 :mux-channel 0]
+                               :num-outputs 1})
+
+(def multiplex-analog-in (partial abstract-ugen multiplex-analog-in-data))
+(def multiplex-analog-in:ar (partial abstract-ugen (assoc multiplex-analog-in-data :calculation-rate :ar)))
+(def multiplex-analog-in:kr (partial abstract-ugen (assoc multiplex-analog-in-data :calculation-rate :kr)))
+
+(def analog-in-data {:ugen-name "AnalogIn"
+                     :rates [:ar :kr]
+                     :inputs [:analog-pin 0]
+                     :num-outputs 1})
+
+(def analog-in (partial abstract-ugen analog-in-data))
+(def analog-in:ar (partial abstract-ugen (assoc analog-in-data :calculation-rate :ar)))
+(def analog-in:kr (partial abstract-ugen (assoc analog-in-data :calculation-rate :kr)))
+
+(def analog-out-data {:ugen-name "AnalogOut"
+                     :rates [:ar :kr]
+                     :inputs [:analog-pin 0]
+                     :num-outputs 0});;TODO test - reference implementation no-ops writeOutputSpecs, probably need something like that
+
+(def analog-out (partial abstract-ugen analog-out-data))
+(def analog-out:ar (partial abstract-ugen (assoc analog-out-data :calculation-rate :ar)))
+(def analog-out:kr (partial abstract-ugen (assoc analog-out-data :calculation-rate :kr)))
+
+(def digital-in-data {:ugen-name "DigitalIn"
+                      :rates [:ar :kr]
+                      :inputs [:digital-pin 0]
+                      :num-outputs 1})
+
+(def digital-in (partial abstract-ugen digital-in-data))
+(def digital-in:ar (partial abstract-ugen (assoc digital-in-data :calculation-rate :ar)))
+(def digital-in:kr (partial abstract-ugen (assoc digital-in-data :calculation-rate :kr)))
+
+(def digital-out-data {:ugen-name "DigitalOut"
+                       :rates [:ar :kr]
+                       :inputs [:digital-pin 0]
+                       :num-outputs 0});;TODO test - reference implementation no-ops writeOutputSpecs, probably need something like that
+
+(def digital-out (partial abstract-ugen digital-out-data))
+(def digital-out:ar (partial abstract-ugen (assoc digital-out-data :calculation-rate :ar)))
+(def digital-out:kr (partial abstract-ugen (assoc digital-out-data :calculation-rate :kr)))
+
+(def digital-io-data {:ugen-name "DigitalIO"
+                      :rates [:ar :kr]
+                      :inputs [:digital-pin 0 :output 0 :pin-mode 0]
+                      :num-outputs 1})
+
+(def digital-io (partial abstract-ugen digital-io-data))
+(def digital-io:ar (partial abstract-ugen (assoc digital-io-data :calculation-rate :ar)))
+(def digital-io:kr (partial abstract-ugen (assoc digital-io-data :calculation-rate :ar)))
