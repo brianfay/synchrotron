@@ -66,4 +66,25 @@
     (scsynth/add-synth-to-head linens-n-things 4 0 (rand-args))
     (scsynth/add-synth-to-tail delay 5 0 [:delay-l-time (/ (rand-int 10) 10) :delay-r-time (/ (rand-int 10) 10)]))
 
+
+  ;;load some example sound files (from a scene in Breaking Bad)
+  (scsynth/alloc-buffer-from-soundfile 1 "samples/synchrotrons-stereo.wav")
+  (scsynth/alloc-buffer-from-soundfile 1 "samples/patterns-stereo.wav")
+
+  (defsynth loop-walt [buf-num 1 rate 1 out-bus 0]
+    (let [;;wobble (u/mul:kr 0 (u/sin-osc:kr (u/lf-noise-1:kr 0.2)))
+          ;; rate   (u/add:kr rate wobble)
+          phasor (u/phasor:ar 0 (u/mul:kr rate (u/buf-rate-scale:kr buf-num)) 0 (u/buf-frames:kr buf-num))
+          buf-rd (u/buf-rd:ar :num-channels 2
+                              :buf-num buf-num
+                              :phase phasor
+                              :loop 1
+                              :interpolation 2)]
+      (u/out:ar out-bus buf-rd)))
+
+  (do
+    (scsynth/deep-free 0)
+    (scsynth/add-synth-to-head loop-walt 1 0)
+    (scsynth/add-synth-to-head loop-walt 2 0 [:out-bus 1 :rate 1.01]))
+
   )
