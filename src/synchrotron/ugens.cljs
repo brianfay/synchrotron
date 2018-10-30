@@ -205,6 +205,28 @@
 (def buf-channels:ir (partial abstract-ugen (assoc buf-channels-data :calculation-rate :ir)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Line
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def line-data {:ugen-name "Line"
+                :rates [:ar :kr]
+                :inputs [:start 0.0 :end 1.0 :dur 1.0 :done-action 0]
+                :num-outputs 1})
+
+(def line    (partial abstract-ugen line-data))
+(def line:ar (partial abstract-ugen (assoc line-data :calculation-rate :ar)))
+(def line:kr (partial abstract-ugen (assoc line-data :calculation-rate :kr)))
+
+(def x-line-data {:ugen-name "XLine"
+                  :rates [:ar :kr]
+                  :inputs [:start 1.0 :end 2.0 :dur 1.0 :done-action 0]
+                  :num-outputs 1})
+
+(def x-line    (partial abstract-ugen x-line-data))
+(def x-line:ar (partial abstract-ugen (assoc x-line-data :calculation-rate :ar)))
+(def x-line:kr (partial abstract-ugen (assoc x-line-data :calculation-rate :kr)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Noise
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
