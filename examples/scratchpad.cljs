@@ -10,7 +10,7 @@
 
   ;;add a very simple synth definition (also compiles it and sends to the definition to scsynth)
   (defsynth simple-sine []
-    (u/out [0 1] (u/mul 0.3 (u/sin-osc 440))))
+    (u/out [0 1] (u/mul 0.03 (u/sin-osc 440))))
 
   ;;add a new instance of simple-sine to head of group 0
   (do
@@ -87,4 +87,17 @@
     (scsynth/add-synth-to-head loop-walt 1 0)
     (scsynth/add-synth-to-head loop-walt 2 0 [:out-bus 1 :rate 1.01]))
 
+  ;;WARNING: for these to work, scsynth must have been started with flags setting number of various channels, like this:
+  ;;scsynth -u 57110 -z 16 -J 8 -K 8 -G 16
+  (defsynth bela-test [in-pin 7]
+    (u/out [0 1] (u/mul:ar
+                  0.03
+                  (u/mul:ar (u/digital-io:ar in-pin) (u/sin-osc:ar 330)))))
+
+  (do
+    (scsynth/deep-free 0)
+    (scsynth/add-synth-to-head bela-test 1 0 [:in-pin 6])
+    (scsynth/add-synth-to-head bela-test 2 0 [:in-pin 7])
+    (scsynth/add-synth-to-head bela-test 3 0 [:in-pin 10])
+    )
   )
