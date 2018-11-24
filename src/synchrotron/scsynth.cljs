@@ -147,13 +147,18 @@
   [id]
   (call-scsynth "n_free" id))
 
+(defn run-node
+  "If 0 is passed, pauses the node. If 1 is passed, runs the node."
+  [id val]
+  (call-scsynth "n_run" id val))
+
 (defn deep-free
   [id]
   (call-scsynth "g_deepFree" id))
 
 (defn set-control
-  [id name val]
-  (call-scsynth "n_set" id name val))
+  [id & name-val-pairs]
+  (apply call-scsynth "n_set" id name-val-pairs))
 
 (defn map-control-to-bus
   [id name bus]
