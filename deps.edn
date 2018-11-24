@@ -1,5 +1,6 @@
 {:deps {org.clojure/clojurescript {:mvn/version "1.10.339"}
-        com.stuartsierra/dependency {:mvn/version "0.2.0"}}
+        com.stuartsierra/dependency {:mvn/version "0.2.0"}
+        org.clojure/core.async {:mvn/version "0.4.474"}}
  :aliases {:nrepl
            {:extra-deps
             {nrepl/nrepl {:mvn/version "0.4.5"}

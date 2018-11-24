@@ -6,7 +6,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def binary-op-ugen-data {:ugen-name "BinaryOpUGen"
-                          :rates [:ar :kr :demand :scalar]
+                          :rates [:ar :kr :demand :ir]
                           :inputs [:a nil :b nil]
                           :num-outputs 1})
 

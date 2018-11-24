@@ -87,7 +87,7 @@
            (fill-in-named-args kwargs-map)))
     (fill-in-ordered-args args default-args)))
 
-(def kw-rate->int-rate {:scalar 0
+(def kw-rate->int-rate {:ir 0
                         :kr 1
                         :ar 2
                         :demand 3})
