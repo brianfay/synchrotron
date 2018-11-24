@@ -3,6 +3,8 @@
             [synchrotron.ugens :as u])
   (:require-macros [synchrotron.macros :as macros :refer [defsynth]]))
 
+(defonce performance (aget (js/require "perf_hooks") "performance"))
+
 (comment
   ;;boot supercollider (or reboot, if it segfaulted or something)
   (do (scsynth/kill-scsynth)
@@ -42,8 +44,8 @@
   (defsynth delay [delay-l-time 0.2 delay-r-time 0.2]
     (let [in-l (u/in 0)
           in-r (u/in 1)]
-      (u/replace-out [0 1] [(u/add in-l (u/comb-n in-l 0.5 delay-l-time 0.5))
-                            (u/add in-r (u/comb-n in-r 0.5 delay-r-time 0.5))])))
+      (u/replace-out [0 1] [(u/add in-l (u/comb-n in-l 2 delay-l-time 1))
+                            (u/add in-r (u/comb-n in-r 2 delay-r-time 1))])))
 
   ;;little generative experiment
   (let [fundamental (rand-nth [100 160 220])
@@ -100,4 +102,77 @@
     (scsynth/add-synth-to-head bela-test 2 0 [:in-pin 7])
     (scsynth/add-synth-to-head bela-test 3 0 [:in-pin 10])
     )
-  )
+
+  (defsynth send-trig []
+    (u/send-trig:kr (u/impulse:kr 2) 0 0))
+
+  (do
+    (scsynth/deep-free 0)
+    (scsynth/add-synth-to-head send-trig 1 0)
+    )
+
+  (defsynth audio-input [in-bus 0 out-bus 0]
+    (u/out:ar out-bus (u/in:ar in-bus)))
+
+  (defsynth record-loop [buf-num 0 in-bus 0 trig 1 run 1]
+    (let [in (u/in:ar in-bus)]
+      (u/record-buf:ar :input-array in
+                       :buf-num buf-num
+                       :offset 0
+                       :rec-level 1
+                       :pre-level 0
+                       :run run
+                       :loop 1
+                       :trigger trig)))
+
+  (defsynth play-loop [buf-num 0 out-bus 0 rate 1 trig 1 loop-end 1]
+    (let [ph (u/phasor:ar :trig trig
+                          :rate (u/mul:kr
+                                 (u/buf-rate-scale:kr buf-num)
+                                 rate)
+                          :end (u/mul:kr (u/sample-rate:ir) loop-end))
+          out (u/buf-rd:ar 1 buf-num ph :loop 1 :interpolation 2)]
+      (u/out:ar out-bus out)))
+
+  ;;add a weird backwards delay
+  (do
+    (scsynth/deep-free 0)
+    (scsynth/alloc-buffer 3 (* 48000 2) 1)
+    (scsynth/add-synth-to-head record-loop 1 0 [:buf-num 3 :in-bus 8])
+    (scsynth/add-synth-after play-loop 2 1 [:buf-num 3 :rate -2 :out-bus 0 :loop-end 1])
+    (scsynth/add-synth-after play-loop 3 1 [:buf-num 3 :rate -2 :out-bus 1 :loop-end 1]))
+
+  (do
+    (scsynth/deep-free 0)
+    (scsynth/alloc-buffer 1 (* 48000 100) 1)
+    ;;8 is the first "hardware" input bus, using jack you can reroute audio from other applications to this
+    ;;(I'm using Patchage to route my PulseAudio JACK Sink outputs into SuperCollider)
+    (scsynth/add-synth-to-head audio-input 1 0 [:in-bus 8 :out-bus 0])
+
+    ;;add the record-head, which won't record until activated
+    (scsynth/add-synth-after record-loop 2 1 [:buf-num 1 :in-bus 0 :trig -1 :run 0])
+
+    ;;add the play-head
+    (scsynth/add-synth-after play-loop 3 2 [:buf-num 1 :rate 1 :out-bus 1 :loop-end 2]))
+
+  (def timestamp (atom nil))
+  ;;start recording
+  (do
+    (reset! timestamp (.now performance))
+    (scsynth/set-control 2 :trig 1 :run 1)
+    (scsynth/run-node 3 0))
+
+
+  ;;stop recording and play loop
+  (let [loop-time (/ (- (.now performance) @timestamp) 1000)]
+    (scsynth/set-control 2 :trig -1 :run 0)
+    (scsynth/run-node 3 1)
+    (scsynth/set-control 3 :trig 1 :loop-end loop-time))
+
+  ;;vapourwave recipe:
+  ;;loop a few bars of 80s japanese jazz fusion
+  ;;slow it down, play it backwards, add some delay
+  (scsynth/set-control 3 :rate -0.68)
+  (scsynth/add-synth-after delay 4 3)
+  (scsynth/set-control 4 :delay-r-time 0.4)
+)
