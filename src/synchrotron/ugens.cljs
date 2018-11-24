@@ -57,6 +57,16 @@
 (def buf-wr:ar (partial abstract-ugen (assoc buf-wr-data :calculation-rate :ar)))
 (def buf-wr:kr (partial abstract-ugen (assoc buf-wr-data :calculation-rate :kr)))
 
+(def record-buf-data {:ugen-name "RecordBuf"
+                      :rates [:ar :kr]
+                      ;;TODO: would need to actually explode input-array out into multiple inputs to get this working with multi-channel buffers
+                      :inputs [:buf-num 0 :offset 0 :rec-level 1 :pre-level 0 :run 1 :loop 1 :trigger 1 :done-action 0 :input-array nil]
+                      :num-outputs 1})
+
+(def record-buf (partial abstract-ugen record-buf-data))
+(def record-buf:ar (partial abstract-ugen (assoc record-buf-data :calculation-rate :ar)))
+(def record-buf:kr (partial abstract-ugen (assoc record-buf-data :calculation-rate :kr)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Delays
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -307,6 +317,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Trig
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def send-trig-data {:ugen-name "SendTrig"
+                     :rates [:ar :kr]
+                     :inputs [:in 0 :id 0 :value 0]
+                     :num-outputs 0})
+
+(def send-trig (partial abstract-ugen send-trig-data))
+(def send-trig:ar (partial abstract-ugen (assoc send-trig-data :calculation-rate :ar)))
+(def send-trig:kr (partial abstract-ugen (assoc send-trig-data :calculation-rate :kr)))
 
 (def phasor-data {:ugen-name   "Phasor"
                   :rates       [:ar :kr]
